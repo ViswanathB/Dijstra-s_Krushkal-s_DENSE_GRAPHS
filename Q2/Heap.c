@@ -15,6 +15,16 @@ int print_heap(struct heap *h) {
         }
 }
 
+int min_of_three(int a, int b, int c) {
+
+        int min = a;
+    
+        if (b<min) min = b;
+        if (c<min) min = c;
+
+        return min;
+}
+
 int swap (int *a, int *b) {
     
         int temp;
@@ -29,27 +39,35 @@ int swap (int *a, int *b) {
 
 int delete_minofheap (struct heap *h) {
 	
+	int min = h->H[1];
 	h->H[1] = h->H[h->next_element_index-1];
 	h->H[h->next_element_index] = 0;
 	h->next_element_index--;
-	printf("\n next_element_index :%d",h->next_element_index);
+	//printf("\n next_element_index :%d",h->next_element_index);
 	
 	int temp = 1;// count = 0;
-	while (temp < h->next_element_index) {
-		if (((h->H[temp] > h->H[2*temp]) || (h->H[temp] > h->H[2*temp+1])) &&
-					(2*temp+1 < h->next_element_index)) {
-			//printf("\n yes it is more");count++; if (count == 10) break;
-			if((h->H[temp] > h->H[2*temp])) {
-				swap(h->H+temp,h->H+2*temp);
-				temp = temp*2;
-			} else if ((h->H+temp > h->H+2*temp+1)) {
-				swap(h->H+temp,h->H+2*temp+1);
-				temp = temp*2;
-			}
-		} else {
-			break;
-		}	
-	}
+	int minofthree;
+	
+	while (temp <= (h->next_element_index/2)) {
+                if ((h->H[temp] > h->H[2*temp]) || (h->H[temp] > h->H[2*temp+1])) {
+                        minofthree = min_of_three(h->H[temp],h->H[2*temp], h->H[2*temp+1]);
+			//printf("\nminofthree:%d",minofthree);
+                        if (h->H[temp] == minofthree) {
+                                // we don't have to do anything since H[temp] is the largest
+                                break;
+                        } else if (h->H[temp*2] == minofthree){
+                                swap(h->H+temp, h->H+temp*2); 
+                                temp = temp*2;
+                        } else { // this means h->H+temp*2+1 is the largest
+                                swap(h->H+temp, h->H+temp*2+1);
+                                temp = temp*2+1;
+                        }    
+                } else {
+                        break;
+                }
+        }
+	return min;
+
 }
 
 //This filters the heap upwards to the 
@@ -63,11 +81,9 @@ void minify_heap(struct heap *h) {
 	while (temp>2 && temp!=1) {
 		if (h->H[temp] < h->H[temp/2]) {
 			swap(h->H+temp, h->H+temp/2);
-		} else if (h->H[temp] < h->H[(temp/2)+1]) { 
-			swap(h->H+temp, h->H+(temp/2)+1);
-		} else 
+		} else { 
 			break;
-		
+		}
 		temp = temp/2;
 	}
  	
@@ -92,6 +108,12 @@ int insert_inheap(struct heap *h, int a) {
 }
 
 
+int minofheap (struct heap *h) {
+	
+	return h->H[1];
+
+} 
+
 int main() {
 
 	struct heap my_heap;
@@ -111,22 +133,23 @@ int main() {
 			insert_inheap(&my_heap, a);
 		}
 	}
-
+	printf("\n HEAP array:\n");
 	print_heap(&my_heap);
 	a =1;
-	while(a) {
-		printf("\n Enter deletion");
-		scanf("%d",&a);
+	//while(a) {
+		printf("\n minimum of the heap is :%d",minofheap(&my_heap));
+		printf("\n deletion");
+	//	scanf("%d",&a);
 		if(a!=0) {
 			if (my_heap.next_element_index >=1)
-				delete_minofheap(&my_heap);
+				printf("\ndeleted minimum in heap:%d\n",delete_minofheap(&my_heap));
 			else {
 				printf("\n All heap elements have been deleted");
-				break;
+	//			break;
 			}
 		}
-		print_heap(&my_heap);
-	}
+		//print_heap(&my_heap);
+	//}
 
 	return 0;	
 }

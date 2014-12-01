@@ -57,8 +57,9 @@ void add_edges(struct vertex V[]) {
    	/* Print 6 random numbers from 0 to 50 */
    	for( j = 0 ; j < 6 ; j++ ) {
 		if (V[i].total_edges<6) {
-			
-			random_vertex = rand()%5000; 
+			do {
+				random_vertex = rand()%5000; 
+			} while(random_vertex == i || V[random_vertex].total_edges >= 6);
         	        random_weight = rand()%50 + 1; // We don't want the weight to be 0.
 	
 			add_to_vertex(V+i,random_vertex, random_weight);
@@ -66,6 +67,7 @@ void add_edges(struct vertex V[]) {
 		}
    	}
 
+	printf(" %d ",V[i].total_edges);
 	curr_edge = V[i].edges_list;
 	for(j =0; j<6 ;j++) {
 		printf(" V:%d, W:%d \t",curr_edge->vertex_id, curr_edge->weight);
